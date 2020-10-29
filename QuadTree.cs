@@ -19,16 +19,13 @@ namespace TestQuadTree
     {
         //Hacer que las celdas sean moviles para que se desplazen rápido
         QuadTree []child;
-        readonly double Lead;
         Square Dimensions;
         private Fill fill;
 
-        public QuadTree(Square Region,double lead)
+        public QuadTree(Square Region)
         {
             child = new QuadTree[4];
             Dimensions = Region;
-            Lead = lead;
-            //Box = box;
             child[0] = null;
             child[1] = null;
             child[2] = null;
@@ -41,7 +38,7 @@ namespace TestQuadTree
             {
                 if (fill == Fill.Black) return true;//Se agregó esto
                 Console.WriteLine("In=============");
-                if(Dimensions.Length>Lead)
+                if(Dimensions.IsValid())//Evita que se subdivida cuando alcanzó su longitud minima
                 {
                     bool BlackTree = true;
                     bool Inserted = false;
@@ -53,8 +50,9 @@ namespace TestQuadTree
                         {
                             //Es posible determinar si la región quedó más pequeña antes de crear el hijo
                             var Region = Dimensions.GetQuadrant(i);
-                            child[i] = new QuadTree(Region, Lead);
+                            child[i] = new QuadTree(Region);
                         }
+                        Console.WriteLine("Lead: "+child[i].Dimensions.Length);
                         //Si no se ha insertado entonces entra en AddCell
                         if (!Inserted) { Inserted = child[i].AddCell(cell); }
                         
@@ -86,23 +84,12 @@ namespace TestQuadTree
         }
         public bool IsFilled(Cell cell)
         {
-            if (Dimensions.InRange(cell))
-            {
-                if (fill == Fill.White) return false;
-                if (fill == Fill.Gray)
-                {
-                    
-                    for (int i = 0; i < 4; i++)
-                    {
-                        if( child[i].IsFilled(cell))
-                        {
-                            return true;
-                        }
-                    }
-                }
-                if (fill == Fill.Black) return true;
-            }
-            return false;
+            //Se puede optimizar sacando InRange(cell)
+            //Si el punto no está en cuadrante, o el cuadrante es blanco
+            if ((fill == Fill.White) || !Dimensions.InRange(cell)) return false;
+            if (fill == Fill.Black) return true;
+            //si está aquí es porque está en el cuadrante y fill=Gray
+            return child[Dimensions.IQuad(cell)].IsFilled(cell);
         }
     }
     class Square 
@@ -123,6 +110,20 @@ namespace TestQuadTree
             return XinRange && YinRange;
         }
 
+        public bool IsValid()
+        {
+            return Power > 0;
+        }
+        public int IQuad(Cell cell)
+        {
+            var difX = cell.X - Center.X;
+            var difY = cell.Y - Center.Y;
+            if(difX>0)
+            {
+                return difY > 0 ? 0 : 3;
+            }
+            return difY > 0 ? 1 : 2;
+        }
         public Square GetQuadrant(int iQuad)
         {
             var Qcenter = new Point();
@@ -147,7 +148,7 @@ namespace TestQuadTree
                     Qcenter.Y = Center.Y - QLength;
                     break;
             };
-            return new Square(Qcenter, Power - 1, Lead); //Se puede optimizar si ya se pasara Length en potencia de 2
+            return new Square(Qcenter, Power - 1, Lead); 
         }
         public double GetHalfLength()
         {
