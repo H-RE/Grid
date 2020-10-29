@@ -1,0 +1,5 @@
+bin/*
+obj/*
+TestQuadTree.csproj
+TestQuadTree.csproj.user
+WorkSpace.code-workspace
