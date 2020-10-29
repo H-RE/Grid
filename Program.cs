@@ -12,26 +12,33 @@ namespace TestQuadTree
             Cell[] punto = new Cell[4];
             punto[0] = new Cell(-1, -1);
             punto[1] = new Cell(-2, -1);
-            punto[2] = new Cell(-2, -2);
+            punto[2] = new Cell(-1, -2);
             punto[3] = new Cell(-1, -2);
-            Console.WriteLine("====== PROCESO DE INSERCION =========");
             for (int i=0; i<punto.Length;i++)
             {
-                Console.WriteLine("\n\n Add cell: "+punto[i].X+"\t"+ punto[i].Y);
                 Tree.AddCell(punto[i]);
             }
             
             Cell Try = new Cell(-2, -2);
-            Console.WriteLine("\n\n====== PROCESO DE BUSQUEDA =========");
             var sw = new Stopwatch();
-            sw.Start();
-            Console.WriteLine(Tree.IsFilled(Try));
-            sw.Stop();
-            Console.WriteLine(sw.ElapsedMilliseconds);
             
+            sw.Start();
+            Tree.IsFilled(Try);
+            sw.Stop();
+            Console.WriteLine("Tiempo en comprobar que existe la celda: "+sw.ElapsedTicks);
+            sw.Reset();
+
+            sw.Start();
+            Tree.AddCell(Try);
+            sw.Stop();
+            Console.WriteLine("Tiempo en llenar una celda: " + sw.ElapsedTicks);
+
+
+            sw.Reset();
+            sw.Start();
+            Tree.IsFilled(Try);
+            sw.Stop();
+            Console.WriteLine("Tiempo en comprobar que existe la celda: " + sw.ElapsedTicks);
         }
     }
-
-
-
 }

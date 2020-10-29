@@ -37,22 +37,18 @@ namespace TestQuadTree
             if (Dimensions.InRange(cell))
             {
                 if (fill == Fill.Black) return true;//Se agregó esto
-                Console.WriteLine("In=============");
                 if(Dimensions.IsValid())//Evita que se subdivida cuando alcanzó su longitud minima
                 {
                     bool BlackTree = true;
                     bool Inserted = false;
                     for (int i = 0; i < 4; i++)
                     {
-                        Console.WriteLine("Cuadrante: " + (i+1));
-                        
                         if(child[i]==null)
                         {
                             //Es posible determinar si la región quedó más pequeña antes de crear el hijo
                             var Region = Dimensions.GetQuadrant(i);
                             child[i] = new QuadTree(Region);
                         }
-                        Console.WriteLine("Lead: "+child[i].Dimensions.Length);
                         //Si no se ha insertado entonces entra en AddCell
                         if (!Inserted) { Inserted = child[i].AddCell(cell); }
                         
