@@ -70,12 +70,6 @@ namespace TestQuadTree
                     return true;
                 }
             }
-            else
-            {
-                
-                //fill = Fill.White;
-                Array.Clear(child, 0, 4);
-            }
             return false;
         }
         public bool IsFilled(Cell cell)
