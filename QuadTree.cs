@@ -47,13 +47,13 @@ namespace TestQuadTree
                     child[Quad] = new QuadTree(Region);
                 }
                 child[Quad].AddCell(cell);
-                for (int i = 0;i < 4; i++)
+                for (int i = 0;i < 4; i++)//Verifica si todos los cuadrantes tienen el mismo valor
                 {
                     if (i == Quad) continue;
                     if (child[i] == null) { BlackTree = false; break; }
                     BlackTree=(child[i].fill == Fill.Black) && BlackTree;
                 }
-                if (BlackTree)
+                if (BlackTree)//si todos tienen el mismo valor, une todos los elementos
                 {
                     fill = Fill.Black;
                     Array.Clear(child, 0, 4);
@@ -78,7 +78,6 @@ namespace TestQuadTree
     }
     class Square 
     {
-        
         public Point Center { get; set; }
         public double Length { get; private set; }
         public double Lead { get; set; }
@@ -89,8 +88,8 @@ namespace TestQuadTree
             var disX = Math.Abs(cell.X - Center.X);
             var disY = Math.Abs(cell.Y - Center.Y);
             var HalfLength = Length / 2;
-            bool XinRange = disX < HalfLength;
-            bool YinRange = disY < HalfLength;
+            bool XinRange = disX <= HalfLength;
+            bool YinRange = disY <= HalfLength;
             return XinRange && YinRange;
         }
 
