@@ -60,12 +60,8 @@ namespace TestQuadTree
                 }
                 return true; ;
             }
-<<<<<<< HEAD
             fill = Fill.Black;
             return true;
-=======
-            return false;
->>>>>>> 1b83935e7214968befdaffb43cb7ddd5f65c092b
         }
         public bool IsFilled(Cell cell)
         {
