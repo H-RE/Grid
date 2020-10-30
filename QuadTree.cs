@@ -34,38 +34,34 @@ namespace TestQuadTree
         }
         public bool AddCell(Cell cell)
         {
-            if (Dimensions.InRange(cell))
+            if (!Dimensions.InRange(cell)) return false;
+            if (fill == Fill.Black) return true;
+
+            if(Dimensions.IsValid())//Evita que se subdivida cuando alcanzó su longitud minima
             {
-                if (fill == Fill.Black) return true;//Se agregó esto
-                if(Dimensions.IsValid())//Evita que se subdivida cuando alcanzó su longitud minima
+                bool BlackTree = true;//Determina si los 4 cuadrantes pueden formar 1 solo nodo
+                var Quad = Dimensions.IQuad(cell);
+                if (child[Quad] == null)
                 {
-                    bool BlackTree = true;//Determina si los 4 cuadrantes pueden formar 1 solo nodo
-                    var Quad = Dimensions.IQuad(cell);
-                    if (child[Quad] == null)
-                    {
-                        var Region = Dimensions.GetQuadrant(Quad);
-                        child[Quad] = new QuadTree(Region);
-                    }
-                    child[Quad].AddCell(cell);
-                    for (int i = 0; i < 4; i++)
-                    {
-                        if (child[i] == null) { BlackTree = false; break; }
-                        BlackTree=(child[i].fill == Fill.Black) && BlackTree;
-                    }
-                    if (BlackTree)
-                    {
-                        fill = Fill.Black;
-                        Array.Clear(child, 0, 4);
-                    }
-                    else { fill = Fill.Gray; }
-
-                    return BlackTree;
+                    var Region = Dimensions.GetQuadrant(Quad);
+                    child[Quad] = new QuadTree(Region);
                 }
-                fill = Fill.Black;
-                return true;
+                child[Quad].AddCell(cell);
+                for (int i = 0;i < 4; i++)
+                {
+                    if (i == Quad) continue;
+                    if (child[i] == null) { BlackTree = false; break; }
+                    BlackTree=(child[i].fill == Fill.Black) && BlackTree;
+                }
+                if (BlackTree)
+                {
+                    fill = Fill.Black;
+                    Array.Clear(child, 0, 4);
+                }
+                return true; ;
             }
-
-            return false;
+            fill = Fill.Black;
+            return true;
         }
         public bool IsFilled(Cell cell)
         {
