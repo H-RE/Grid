@@ -20,25 +20,25 @@ namespace TestQuadTree
             }
             
             Cell Try = new Cell(-2, -2);
-            var sw = new Stopwatch();
-            
-            sw.Start();
-            Tree.IsFilled(Try);
-            sw.Stop();
-            Console.WriteLine("Tiempo en comprobar que existe la celda: "+sw.ElapsedTicks);
-            sw.Reset();
+            Console.WriteLine(Tree.IsFilled(Try));
 
-            sw.Start();
-            Tree.AddCell(Try);
-            sw.Stop();
-            Console.WriteLine("Tiempo en llenar una celda: " + sw.ElapsedTicks);
+            //var sw = new Stopwatch();
+            //sw.Start();
+            //Tree.IsFilled(Try);
+            //sw.Stop();
+            //Console.WriteLine("Tiempo en comprobar que existe la celda: "+sw.ElapsedTicks);
+            //sw.Reset();
 
+            //sw.Start();
+            //Tree.AddCell(Try);
+            //sw.Stop();
+            //Console.WriteLine("Tiempo en llenar una celda: " + sw.ElapsedTicks);
 
-            sw.Reset();
-            sw.Start();
-            Tree.IsFilled(Try);
-            sw.Stop();
-            Console.WriteLine("Tiempo en comprobar que existe la celda: " + sw.ElapsedTicks);
+            //sw.Reset();
+            //sw.Start();
+            //Tree.IsFilled(Try);
+            //sw.Stop();
+            //Console.WriteLine("Tiempo en comprobar que existe la celda: " + sw.ElapsedTicks);
         }
     }
 }

@@ -39,22 +39,19 @@ namespace TestQuadTree
                 if (fill == Fill.Black) return true;//Se agregó esto
                 if(Dimensions.IsValid())//Evita que se subdivida cuando alcanzó su longitud minima
                 {
-                    bool BlackTree = true;
-                    bool Inserted = false;
+                    bool BlackTree = true;//Determina si los 4 cuadrantes pueden formar 1 solo nodo
+                    var Quad = Dimensions.IQuad(cell);
+                    if (child[Quad] == null)
+                    {
+                        var Region = Dimensions.GetQuadrant(Quad);
+                        child[Quad] = new QuadTree(Region);
+                    }
+                    child[Quad].AddCell(cell);
                     for (int i = 0; i < 4; i++)
                     {
-                        if(child[i]==null)
-                        {
-                            //Es posible determinar si la región quedó más pequeña antes de crear el hijo
-                            var Region = Dimensions.GetQuadrant(i);
-                            child[i] = new QuadTree(Region);
-                        }
-                        //Si no se ha insertado entonces entra en AddCell
-                        if (!Inserted) { Inserted = child[i].AddCell(cell); }
-                        
-                        BlackTree = (child[i].fill == Fill.Black) && BlackTree;
+                        if (child[i] == null) { BlackTree = false; break; }
+                        BlackTree=(child[i].fill == Fill.Black) && BlackTree;
                     }
-                    
                     if (BlackTree)
                     {
                         fill = Fill.Black;
@@ -64,28 +61,23 @@ namespace TestQuadTree
 
                     return BlackTree;
                 }
-                else
-                {   
-                    fill = Fill.Black;
-                    return true;
-                }
+                fill = Fill.Black;
+                return true;
             }
-            else
-            {
-                
-                //fill = Fill.White;
-                Array.Clear(child, 0, 4);
-            }
+
             return false;
         }
         public bool IsFilled(Cell cell)
         {
             //Se puede optimizar sacando InRange(cell)
             //Si el punto no está en cuadrante, o el cuadrante es blanco
-            if ((fill == Fill.White) || !Dimensions.InRange(cell)) return false;
+            //if ((fill == Fill.White) || !Dimensions.InRange(cell)) return false;
+            if (!Dimensions.InRange(cell)) return false;
             if (fill == Fill.Black) return true;
-            //si está aquí es porque está en el cuadrante y fill=Gray
-            return child[Dimensions.IQuad(cell)].IsFilled(cell);
+            var Child = child[Dimensions.IQuad(cell)];
+            if (Child == null) return false;
+
+            return Child.IsFilled(cell);
         }
     }
     class Square 
