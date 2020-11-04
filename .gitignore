@@ -1,5 +1,6 @@
 bin/*
 obj/*
+Properties/*
 TestQuadTree.csproj
 TestQuadTree.csproj.user
-WorkSpace.code-workspace
+App.config

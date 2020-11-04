@@ -32,21 +32,21 @@ namespace TestQuadTree
             child[3] = null;
             fill = Fill.White;
         }
-        public bool AddCell(Cell cell)
+        public bool AddCell(Point point)
         {
-            if (!Dimensions.InRange(cell)) return false;
+            if (!Dimensions.InRange(point)) return false;
             if (fill == Fill.Black) return true;
 
             if(Dimensions.IsValid())//Evita que se subdivida cuando alcanzó su longitud minima
             {
                 bool BlackTree = true;//Determina si los 4 cuadrantes pueden formar 1 solo nodo
-                var Quad = Dimensions.IQuad(cell);
+                var Quad = Dimensions.IQuad(point);
                 if (child[Quad] == null)
                 {
                     var Region = Dimensions.GetQuadrant(Quad);
                     child[Quad] = new QuadTree(Region);
                 }
-                child[Quad].AddCell(cell);
+                child[Quad].AddCell(point);
                 for (int i = 0;i < 4; i++)//Verifica si todos los cuadrantes tienen el mismo valor
                 {
                     if (i == Quad) continue;
@@ -58,22 +58,22 @@ namespace TestQuadTree
                     fill = Fill.Black;
                     Array.Clear(child, 0, 4);
                 }
-                return true; ;
+                return true;
             }
             fill = Fill.Black;
             return true;
         }
-        public bool IsFilled(Cell cell)
+        public bool IsFilled(Point point)
         {
-            //Se puede optimizar sacando InRange(cell)
+            //Se puede optimizar sacando InRange(point)
             //Si el punto no está en cuadrante, o el cuadrante es blanco
-            //if ((fill == Fill.White) || !Dimensions.InRange(cell)) return false;
-            if (!Dimensions.InRange(cell)) return false;
+            //if ((fill == Fill.White) || !Dimensions.InRange(point)) return false;
+            if (!Dimensions.InRange(point)) return false;
             if (fill == Fill.Black) return true;
-            var Child = child[Dimensions.IQuad(cell)];
+            var Child = child[Dimensions.IQuad(point)];
             if (Child == null) return false;
 
-            return Child.IsFilled(cell);
+            return Child.IsFilled(point);
         }
     }
     class Square 
@@ -83,10 +83,10 @@ namespace TestQuadTree
         public double Lead { get; set; }
         private readonly int Power;
 
-        public bool InRange(Cell cell)
+        public bool InRange(Point point)
         {
-            var disX = Math.Abs(cell.X - Center.X);
-            var disY = Math.Abs(cell.Y - Center.Y);
+            var disX = Math.Abs(point.X - Center.X);
+            var disY = Math.Abs(point.Y - Center.Y);
             var HalfLength = Length / 2;
             bool XinRange = disX <= HalfLength;
             bool YinRange = disY <= HalfLength;
@@ -97,10 +97,10 @@ namespace TestQuadTree
         {
             return Power > 0;
         }
-        public int IQuad(Cell cell)
+        public int IQuad(Point point)
         {
-            var difX = cell.X - Center.X;
-            var difY = cell.Y - Center.Y;
+            var difX = point.X - Center.X;
+            var difY = point.Y - Center.Y;
             if(difX>0)
             {
                 return difY > 0 ? 0 : 3;

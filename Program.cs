@@ -11,11 +11,11 @@ namespace TestQuadTree
             
             Square caja = new Square(new Point(0, 0),3,1.2);
             QuadTree Tree = new QuadTree(caja);
-            Cell[] punto = new Cell[4];
-            punto[0] = new Cell(-1, -1);
-            punto[1] = new Cell(-2, -1);
-            punto[2] = new Cell(-1, -2);
-            punto[3] = new Cell(-1, -2);
+            Point[] punto = new Point[4];
+            punto[0] = new Point(-1, -1);
+            punto[1] = new Point(-2, -1);
+            punto[2] = new Point(-1, -2);
+            punto[3] = new Point(-1, -2);
 
             sw.Start();
             for (int i=0; i<punto.Length;i++)
@@ -25,12 +25,14 @@ namespace TestQuadTree
             sw.Stop();
             Console.WriteLine("Tiempo en llenar una celda: " + sw.ElapsedTicks);
 
-            Cell Try = new Cell(-2, -2);
-            //Console.WriteLine(Tree.IsFilled(Try));
-
-           
+            Point Try = new Point(-2, -2);
+            sw.Reset();
+            sw.Start();
             Tree.IsFilled(Try);
-            
+            sw.Stop();
+            Console.WriteLine("Tiempo en checar una celda: " + sw.ElapsedTicks);
+           
+            Console.ReadKey();
         }
     }
 }
