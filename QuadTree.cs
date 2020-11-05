@@ -6,17 +6,6 @@ using System.Windows.Markup;
 
 namespace TestQuadTree
 {
-    class Point
-    {
-        public double X { get; set; }
-        public double Y { get; set; }
-        public Point(double X,double Y)
-        {
-            this.X = X;
-            this.Y = Y;
-        }
-        public Point() { X = 0;Y = 0; }
-    }
     class QuadTree
     {
         //Hacer que las celdas sean moviles para que se desplazen rápido
@@ -94,7 +83,7 @@ namespace TestQuadTree
 
             if(fill==true)
             {
-                var Ytemp = Dimensions.Center.Y + Dimensions.Length / 2 - Dimensions.Lead / 2;
+                var Ytemp = Dimensions.Center.Y + Dimensions.HalfLength - Dimensions.Lead / 2;
                 
                 var Xdif = X - Dimensions.Center.X;
                 var Xuni = (int)((Xdif)/Dimensions.Lead);
@@ -141,86 +130,6 @@ namespace TestQuadTree
                 }
             }
             return points;
-        }
-    }
-    class Square 
-    {
-        public Point Center { get; set; }
-        public double Length { get; private set; }
-        public double Lead { get; set; }
-        private readonly int Power;
-        public int Units { get; }
-
-        public bool InRange(Point point)
-        {
-            var disX = Math.Abs(point.X - Center.X);
-            var disY = Math.Abs(point.Y - Center.Y);
-            var HalfLength = Length / 2;//checar si se puede establecer desde el constructor
-            bool XinRange = disX <= HalfLength;
-            bool YinRange = disY <= HalfLength;
-            return XinRange && YinRange;
-        }
-        public bool XinRange(double X)
-        {
-            var disX = Math.Abs(X - Center.X);
-            return disX <= Length / 2;
-        }
-
-        public bool IsValid()
-        {
-            return Power > 0;
-        }
-        public int IQuad(Point point)//Se optimizó
-        {
-            if( point.X > Center.X)                  
-            {
-                return point.Y > Center.Y ? 0 : 3;
-            }
-            return point.Y > Center.Y ? 1 : 2;
-        }
-        public Square GetQuadrant(int iQuad)
-        {
-            var Qcenter = new Point();
-            var QLength = Length / 4;
-            
-            switch (iQuad)
-            {
-                case 0:
-                    Qcenter.X = Center.X + QLength;
-                    Qcenter.Y = Center.Y + QLength;
-                    break;
-                case 1:
-                    Qcenter.X = Center.X - QLength;
-                    Qcenter.Y = Center.Y + QLength;
-                    break;
-                case 2:
-                    Qcenter.X = Center.X - QLength;
-                    Qcenter.Y = Center.Y - QLength;
-                    break;
-                case 3:
-                    Qcenter.X = Center.X + QLength;
-                    Qcenter.Y = Center.Y - QLength;
-                    break;
-            };
-            return new Square(Qcenter, Power - 1, Lead); 
-        }
-        public double GetHalfLength()
-        {
-            return Length / 2;
-        }
-
-        //Se puede optimizar si ya se pasara Length en potencia de 2
-        public Square(Point center, int Power, double Lead)
-        {
-            this.Lead = Lead;
-            Center = center;
-            this.Power = Power;
-            Units = 1;//Number of rectangles
-            for(int i=0; i<Power; i++)
-            {
-                Units *= 2;
-            }
-            Length = Lead * Units;
         }
     }
 }

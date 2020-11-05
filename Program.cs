@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Diagnostics;
+using System.Diagnostics.Contracts;
 
 namespace TestQuadTree
 {
@@ -10,24 +11,24 @@ namespace TestQuadTree
         {
             var sw = new Stopwatch();
             
-            Square caja = new Square(new Point(0, 0),5,1.2);
+            Square caja = new Square(new Point(0, 0),14,1);
             QuadTree Tree = new QuadTree(caja);
-            Point[] punto = new Point[7];
-            punto[0] = new Point(-1, -1);
-            punto[1] = new Point(-2, -1);
-            punto[2] = new Point(-1, -2);
-            punto[3] = new Point(-2, -2);
-            punto[4] = new Point(-0.1, -5);
-            punto[5] = new Point(-4, -2);
-            punto[6] = new Point(-4.2, -5);
-
+            List<Point> punto = new List<Point>();
+            for (int i=0; i<1000; i++)
+            {
+                for(int j=0; j<1000;j++)
+                {
+                    punto.Add(new Point(i-49.3, j-49.3));
+                }
+            }
+            Console.WriteLine(punto.Count.ToString());
             sw.Start();
-            for (int i=0; i<punto.Length;i++)
+            for (int i=0; i<punto.Count;i++)
             {
                 Tree.AddCell(punto[i]);
             }
             sw.Stop();
-            Console.WriteLine("Tiempo en llenar una celda: " + sw.ElapsedTicks);
+            Console.WriteLine("Tiempo en llenar una celda: " + sw.ElapsedMilliseconds);
 
             Point Try = new Point(-2, -2);
             sw.Reset();
@@ -41,6 +42,7 @@ namespace TestQuadTree
             {
                 Console.WriteLine(p.X.ToString() + ',' + p.Y.ToString());
             }
+            Console.WriteLine(lis.Count.ToString());
             Console.ReadKey();
         }
     }
