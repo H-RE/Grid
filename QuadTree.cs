@@ -1,6 +1,8 @@
 ﻿using System;
+using System.Collections.Generic;
+using System.Runtime.InteropServices.ComTypes;
 using System.Windows;
-
+using System.Windows.Markup;
 
 namespace TestQuadTree
 {
@@ -18,9 +20,9 @@ namespace TestQuadTree
     class QuadTree
     {
         //Hacer que las celdas sean moviles para que se desplazen rápido
-        QuadTree []child;
-        Square Dimensions;
-        private Fill fill;
+        readonly QuadTree []child;
+        readonly Square Dimensions;
+        private bool fill;
 
         public QuadTree(Square Region)
         {
@@ -30,12 +32,12 @@ namespace TestQuadTree
             child[1] = null;
             child[2] = null;
             child[3] = null;
-            fill = Fill.White;
+            fill = false;
         }
         public bool AddCell(Point point)
         {
             if (!Dimensions.InRange(point)) return false;
-            if (fill == Fill.Black) return true;
+            if (fill == true) return true;
 
             if(Dimensions.IsValid())//Evita que se subdivida cuando alcanzó su longitud minima
             {
@@ -51,16 +53,16 @@ namespace TestQuadTree
                 {
                     if (i == Quad) continue;
                     if (child[i] == null) { BlackTree = false; break; }
-                    BlackTree=(child[i].fill == Fill.Black) && BlackTree;
+                    BlackTree=(child[i].fill == true) && BlackTree;
                 }
                 if (BlackTree)//si todos tienen el mismo valor, une todos los elementos
                 {
-                    fill = Fill.Black;
+                    fill = true;
                     Array.Clear(child, 0, 4);
                 }
                 return true;
             }
-            fill = Fill.Black;
+            fill = true;
             return true;
         }
         public bool IsFilled(Point point)
@@ -69,11 +71,76 @@ namespace TestQuadTree
             //Si el punto no está en cuadrante, o el cuadrante es blanco
             //if ((fill == Fill.White) || !Dimensions.InRange(point)) return false;
             if (!Dimensions.InRange(point)) return false;
-            if (fill == Fill.Black) return true;
+            if (fill == true) return true;
             var Child = child[Dimensions.IQuad(point)];
             if (Child == null) return false;
 
             return Child.IsFilled(point);
+        }
+        public List<Point> FindXCol(double X)
+        {
+            if (!Dimensions.XinRange(X)) return null;
+            var points = new List<Point>();
+            //if (fill == true)
+            //{
+            //    points.Add(Dimensions.Center);
+            //    return points;
+            //}
+            if(!Dimensions.IsValid())
+            {
+                points.Add(Dimensions.Center);
+                return points;
+            }
+
+            if(fill==true)
+            {
+                var Ytemp = Dimensions.Center.Y + Dimensions.Length / 2 - Dimensions.Lead / 2;
+                
+                var Xdif = X - Dimensions.Center.X;
+                var Xuni = (int)((Xdif)/Dimensions.Lead);
+                var Xtemp = Dimensions.Center.X + Xuni * Dimensions.Lead;
+                if (Xdif > 0)//X está a la derecha del centro
+                    Xtemp += Dimensions.Lead / 2;
+                else
+                    Xtemp -= Dimensions.Lead / 2;
+
+                for (int i=0; i<Dimensions.Units; i++)
+                {
+                    points.Add(new Point(Xtemp,Ytemp));
+                    Ytemp -= Dimensions.Lead;
+                }
+                return points;
+            }
+
+            if (X > Dimensions.Center.X)//OPTIMIZAR ESTO
+            {// X se encuentra en la parte derecha del cuadrante
+                if (child[0] != null)
+                {
+                    var values = child[0].FindXCol(X);
+                    if (values != null) points.AddRange(values);
+                }
+
+                if (child[3] != null)
+                {
+                    var values = child[3].FindXCol(X);
+                    if (values != null) points.AddRange(values);
+                }  
+            }
+            else
+            {
+                if (child[1] != null)
+                {
+                    var values = child[1].FindXCol(X);
+                    if (values != null) points.AddRange(values);
+                }
+
+                if (child[2] != null)
+                {
+                    var values = child[2].FindXCol(X);
+                    if (values != null) points.AddRange(values);
+                }
+            }
+            return points;
         }
     }
     class Square 
@@ -82,37 +149,41 @@ namespace TestQuadTree
         public double Length { get; private set; }
         public double Lead { get; set; }
         private readonly int Power;
+        public int Units { get; }
 
         public bool InRange(Point point)
         {
             var disX = Math.Abs(point.X - Center.X);
             var disY = Math.Abs(point.Y - Center.Y);
-            var HalfLength = Length / 2;
+            var HalfLength = Length / 2;//checar si se puede establecer desde el constructor
             bool XinRange = disX <= HalfLength;
             bool YinRange = disY <= HalfLength;
             return XinRange && YinRange;
+        }
+        public bool XinRange(double X)
+        {
+            var disX = Math.Abs(X - Center.X);
+            return disX <= Length / 2;
         }
 
         public bool IsValid()
         {
             return Power > 0;
         }
-        public int IQuad(Point point)
+        public int IQuad(Point point)//Se optimizó
         {
-            var difX = point.X - Center.X;
-            var difY = point.Y - Center.Y;
-            if(difX>0)
+            if( point.X > Center.X)                  
             {
-                return difY > 0 ? 0 : 3;
+                return point.Y > Center.Y ? 0 : 3;
             }
-            return difY > 0 ? 1 : 2;
+            return point.Y > Center.Y ? 1 : 2;
         }
         public Square GetQuadrant(int iQuad)
         {
             var Qcenter = new Point();
             var QLength = Length / 4;
             
-            switch (iQuad)//SE MODIFICARON LOS INDICES DEL SWITCH
+            switch (iQuad)
             {
                 case 0:
                     Qcenter.X = Center.X + QLength;
@@ -144,7 +215,7 @@ namespace TestQuadTree
             this.Lead = Lead;
             Center = center;
             this.Power = Power;
-            var Units = 1;//Number of rectangles
+            Units = 1;//Number of rectangles
             for(int i=0; i<Power; i++)
             {
                 Units *= 2;
@@ -152,5 +223,4 @@ namespace TestQuadTree
             Length = Lead * Units;
         }
     }
-    enum Fill { Black, Gray, White }
 }
