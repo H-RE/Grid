@@ -43,6 +43,8 @@ namespace TestQuadTree
                 Console.WriteLine(p.X.ToString() + ',' + p.Y.ToString());
             }
             Console.WriteLine(lis.Count.ToString());
+
+            
             Console.ReadKey();
         }
     }

@@ -7,8 +7,8 @@ namespace TestQuadTree
         public Point Center { get; set; }
         public double Length { get; private set; }
         public double Lead { get; set; }
-        private readonly int Power;
-        public int Units { get; }
+        private readonly ushort Power;
+        public uint Units { get; }
         public double HalfLength { get; }
 
         public bool InRange(Point point)
@@ -17,7 +17,6 @@ namespace TestQuadTree
             //if (point == null) return false;
             var disX = Math.Abs(point.X - Center.X);
             var disY = Math.Abs(point.Y - Center.Y);
-            //var HalfLength = Length / 2;//checar si se puede establecer desde el constructor
             bool XinRange = disX <= HalfLength;
             bool YinRange = disY <= HalfLength;
             return XinRange && YinRange;
@@ -26,6 +25,11 @@ namespace TestQuadTree
         {
             var disX = Math.Abs(X - Center.X);
             return disX <= HalfLength;
+        }
+        public bool YinRange(double Y)
+        {
+            var disY = Math.Abs(Y - Center.Y);
+            return disY <= HalfLength;
         }
 
         public bool IsValid()
@@ -43,7 +47,7 @@ namespace TestQuadTree
         public Square GetQuadrant(int iQuad)
         {
             var Qcenter = new Point();
-            var QLength = Length / 4;
+            var QLength = Length * 0.25;
             
             switch (iQuad)
             {
@@ -64,23 +68,24 @@ namespace TestQuadTree
                     Qcenter.Y = Center.Y - QLength;
                     break;
             };
-            return new Square(Qcenter, Power - 1, Lead); 
+            return new Square(Qcenter, (ushort)(Power - 1), Lead); 
         }
 
         //Se puede optimizar si ya se pasara Length en potencia de 2
-        public Square(Point center, int Power, double Lead)
+        public Square(Point center, ushort Power, double Lead)
         {
+            //if(Power<64)
             this.Lead = Lead;
             Center = center;
             this.Power = Power;
             Units = 1;//Number of rectangles
-            
+
             for(int i=1; i<Power; i++)
             {
-                Units *= 2;
+                Units += Units;
             }
             HalfLength = Lead * Units;
-            Units *= 2;
+            Units += Units;
             Length = HalfLength + HalfLength;
         }
     }

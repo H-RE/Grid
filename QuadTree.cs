@@ -23,10 +23,16 @@ namespace TestQuadTree
             child[3] = null;
             fill = false;
         }
+
         public bool AddCell(Point point)
         {
             if (!Dimensions.InRange(point)) return false;
-            if (fill == true) return true;
+            PAddCell(point);
+            return true;
+        }
+        private void PAddCell(Point point)
+        {
+            if (fill == true) return;
 
             if(Dimensions.IsValid())//Evita que se subdivida cuando alcanzó su longitud minima
             {
@@ -37,10 +43,11 @@ namespace TestQuadTree
                     var Region = Dimensions.GetQuadrant(Quad);
                     child[Quad] = new QuadTree(Region);
                 }
-                child[Quad].AddCell(point);
+                child[Quad].PAddCell(point);
                 for (int i = 0;i < 4; i++)//Verifica si todos los cuadrantes tienen el mismo valor
                 {
                     if (i == Quad) continue;
+                    //var ch = child[i];
                     if (child[i] == null) { BlackTree = false; break; }
                     BlackTree=(child[i].fill == true) && BlackTree;
                 }
@@ -49,10 +56,8 @@ namespace TestQuadTree
                     fill = true;
                     Array.Clear(child, 0, 4);
                 }
-                return true;
             }
-            fill = true;
-            return true;
+            else  fill = true;
         }
         public bool IsFilled(Point point)
         {
