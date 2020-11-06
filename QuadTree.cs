@@ -9,7 +9,7 @@ namespace TestQuadTree
     class QuadTree
     {
         //Hacer que las celdas sean moviles para que se desplazen rápido
-        readonly QuadTree []child;
+        readonly QuadTree[] child;
         readonly Square Dimensions;
         private bool fill;
 
@@ -34,7 +34,7 @@ namespace TestQuadTree
         {
             if (fill == true) return;
 
-            if(Dimensions.IsValid())//Evita que se subdivida cuando alcanzó su longitud minima
+            if (Dimensions.IsValid())//Evita que se subdivida cuando alcanzó su longitud minima
             {
                 bool BlackTree = true;//Determina si los 4 cuadrantes pueden formar 1 solo nodo
                 var Quad = Dimensions.IQuad(point);
@@ -44,11 +44,11 @@ namespace TestQuadTree
                     child[Quad] = new QuadTree(Region);
                 }
                 child[Quad].PAddCell(point);
-                for (int i = 0;i < 4; i++)//Verifica si todos los cuadrantes tienen el mismo valor
+                for (int i = 0; i < 4; i++)//Verifica si todos los cuadrantes tienen el mismo valor
                 {
                     if (i == Quad) continue;
                     if (child[i] == null) { BlackTree = false; break; }
-                    BlackTree=(child[i].fill == true) && BlackTree;
+                    BlackTree = (child[i].fill == true) && BlackTree;
                 }
                 if (BlackTree)//si todos tienen el mismo valor, une todos los elementos
                 {
@@ -56,7 +56,7 @@ namespace TestQuadTree
                     Array.Clear(child, 0, 4);
                 }
             }
-            else  fill = true;
+            else fill = true;
         }
         public bool IsFilled(Point point)
         {
@@ -79,21 +79,21 @@ namespace TestQuadTree
             //    points.Add(Dimensions.Center);
             //    return points;
             //}
-            if(!Dimensions.IsValid())
+            if (!Dimensions.IsValid())
             {
                 points.Add(Dimensions.Center);
                 return points;
             }
 
-            if(fill==true)
+            if (fill == true)
             {
                 var Ytemp = Dimensions.Center.Y + Dimensions.HalfLength - Dimensions.Lead / 2;
                 var u = Math.Floor((X - Dimensions.Center.X) / Dimensions.Lead);
                 var Xtemp = Dimensions.Center.X + u + Dimensions.Lead / 2;
 
-                for (int i=0; i<Dimensions.Units; i++)
+                for (int i = 0; i < Dimensions.Units; i++)
                 {
-                    points.Add(new Point(Xtemp,Ytemp));
+                    points.Add(new Point(Xtemp, Ytemp));
                     Ytemp -= Dimensions.Lead;
                 }
                 return points;
@@ -111,7 +111,7 @@ namespace TestQuadTree
                 {
                     var values = child[3].FindXCol(X);
                     if (values != null) points.AddRange(values);
-                }  
+                }
             }
             else
             {
@@ -128,6 +128,90 @@ namespace TestQuadTree
                 }
             }
             return points;
+        } 
+        public Point FindMaxInCol(double X)
+        {
+            if (!Dimensions.XinRange(X)) return null;
+            
+            if (!Dimensions.IsValid())
+            {
+                return Dimensions.Center;
+            }
+
+            if (fill == true)
+            {
+                var Ytemp = Dimensions.Center.Y + Dimensions.HalfLength - Dimensions.Lead / 2;
+                var u = Math.Floor((X - Dimensions.Center.X) / Dimensions.Lead);
+                var Xtemp = Dimensions.Center.X + u + Dimensions.Lead / 2;
+
+                return new Point(Xtemp,Ytemp);
+            }
+
+            if (X >= Dimensions.Center.X)
+            {
+                if(child[0] != null)
+                {
+                    return child[0].FindMaxInCol(X);
+                }
+                else if(child[3] != null)//SE PUEDE OMITIR ESTE IF?
+                {
+                    return child[3].FindMaxInCol(X);
+                }
+            }
+            else
+            {
+                if (child[1] != null)
+                {
+                    return child[1].FindMaxInCol(X);
+                }
+                else if (child[2] != null)
+                {
+                    return child[2].FindMaxInCol(X);
+                }
+            }
+            return null;
+        }
+        public Point FindMinInCol(double X)
+        {
+            if (!Dimensions.XinRange(X)) return null;
+
+            if (!Dimensions.IsValid())
+            {
+                return Dimensions.Center;
+            }
+
+            if (fill == true)
+            {
+                var Ytemp = Dimensions.Center.Y - Dimensions.HalfLength + Dimensions.Lead / 2;
+                var u = Math.Floor((X - Dimensions.Center.X) / Dimensions.Lead);
+                var Xtemp = Dimensions.Center.X + u + Dimensions.Lead / 2;
+
+                return new Point(Xtemp, Ytemp);
+            }
+
+            if (X >= Dimensions.Center.X)
+            {
+                if (child[3] != null)
+                {
+                    return child[3].FindMinInCol(X);
+                }
+                else if (child[0] != null)//SE PUEDE OMITIR ESTE IF?
+                {
+                    return child[0].FindMinInCol(X);
+                }
+            }
+            else
+            {
+                if (child[2] != null)
+                {
+                    return child[2].FindMinInCol(X);
+                }
+                else if (child[1] != null)
+                {
+                    return child[1].FindMinInCol(X);
+                }
+            }
+            return null;
         }
     }
 }

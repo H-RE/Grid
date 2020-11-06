@@ -44,6 +44,12 @@ namespace TestQuadTree
             }
             Console.WriteLine(lis.Count.ToString());
 
+            var Pmax = Tree.FindMaxInCol(-0.1);
+            Console.WriteLine("Ymax: "+Pmax.Y.ToString());
+
+            var Pmin = Tree.FindMinInCol(-0.1);
+            Console.WriteLine("Ymin: "+Pmin.Y.ToString());
+
             Console.ReadKey();
         }
     }
