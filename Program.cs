@@ -14,16 +14,16 @@ namespace TestQuadTree
             Square caja = new Square(new Point(0, 0),14,1);
             QuadTree Tree = new QuadTree(caja);
             List<Point> punto = new List<Point>();
-            for (int i=0; i<1000; i++)
+            for (int i = 0; i < 1000; i++)
             {
-                for(int j=0; j<1000;j++)
+                for (int j = 0; j < 1000; j++)
                 {
-                    punto.Add(new Point(i-49.3, j-49.3));
+                    punto.Add(new Point(i - 49.3, j - 49.3));
                 }
             }
             Console.WriteLine(punto.Count.ToString());
             sw.Start();
-            for (int i=0; i<punto.Count;i++)
+            for (int i = 0; i < punto.Count; i++)
             {
                 Tree.AddCell(punto[i]);
             }
@@ -37,14 +37,13 @@ namespace TestQuadTree
             sw.Stop();
             Console.WriteLine("Tiempo en checar una celda: " + sw.ElapsedTicks);
 
-            var lis = Tree.FindXCol(-1);
-            foreach(var p in lis)
+            var lis = Tree.FindXCol(-0.1);
+            foreach (var p in lis)
             {
                 Console.WriteLine(p.X.ToString() + ',' + p.Y.ToString());
             }
             Console.WriteLine(lis.Count.ToString());
 
-            
             Console.ReadKey();
         }
     }

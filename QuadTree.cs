@@ -47,7 +47,6 @@ namespace TestQuadTree
                 for (int i = 0;i < 4; i++)//Verifica si todos los cuadrantes tienen el mismo valor
                 {
                     if (i == Quad) continue;
-                    //var ch = child[i];
                     if (child[i] == null) { BlackTree = false; break; }
                     BlackTree=(child[i].fill == true) && BlackTree;
                 }
@@ -89,14 +88,8 @@ namespace TestQuadTree
             if(fill==true)
             {
                 var Ytemp = Dimensions.Center.Y + Dimensions.HalfLength - Dimensions.Lead / 2;
-                
-                var Xdif = X - Dimensions.Center.X;
-                var Xuni = (int)((Xdif)/Dimensions.Lead);
-                var Xtemp = Dimensions.Center.X + Xuni * Dimensions.Lead;
-                if (Xdif > 0)//X está a la derecha del centro
-                    Xtemp += Dimensions.Lead / 2;
-                else
-                    Xtemp -= Dimensions.Lead / 2;
+                var u = Math.Floor((X - Dimensions.Center.X) / Dimensions.Lead);
+                var Xtemp = Dimensions.Center.X + u + Dimensions.Lead / 2;
 
                 for (int i=0; i<Dimensions.Units; i++)
                 {
@@ -106,7 +99,7 @@ namespace TestQuadTree
                 return points;
             }
 
-            if (X > Dimensions.Center.X)//OPTIMIZAR ESTO
+            if (X >= Dimensions.Center.X)//OPTIMIZAR ESTO
             {// X se encuentra en la parte derecha del cuadrante
                 if (child[0] != null)
                 {
