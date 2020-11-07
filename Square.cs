@@ -21,6 +21,10 @@ namespace TestQuadTree
         {
             return Center.Y + HalfLength - Lead / 2;
         }
+        public double YCellMin()
+        {
+            return Center.Y - HalfLength + Lead / 2;
+        }
 
         public bool InRange(Point point)
         {

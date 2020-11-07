@@ -74,11 +74,6 @@ namespace TestQuadTree
         {
             if (!Dimensions.XinRange(X)) return null;
             var points = new List<Point>();
-            //if (fill == true)
-            //{
-            //    points.Add(Dimensions.Center);
-            //    return points;
-            //}
             if (!Dimensions.IsValid())
             {
                 points.Add(Dimensions.Center);
@@ -87,9 +82,8 @@ namespace TestQuadTree
 
             if (fill == true)
             {
-                var Ytemp = Dimensions.Center.Y + Dimensions.HalfLength - Dimensions.Lead / 2;
-                var u = Math.Floor((X - Dimensions.Center.X) / Dimensions.Lead);
-                var Xtemp = Dimensions.Center.X + u + Dimensions.Lead / 2;
+                var Ytemp = Dimensions.YCellMax();
+                var Xtemp = Dimensions.CenterOnCell(X);
 
                 for (int i = 0; i < Dimensions.Units; i++)
                 {
@@ -101,29 +95,20 @@ namespace TestQuadTree
 
             if (X >= Dimensions.Center.X)//OPTIMIZAR ESTO
             {// X se encuentra en la parte derecha del cuadrante
-                if (child[0] != null)
-                {
-                    var values = child[0].FindXCol(X);
-                    if (values != null) points.AddRange(values);
-                }
-
-                if (child[3] != null)
-                {
-                    var values = child[3].FindXCol(X);
-                    if (values != null) points.AddRange(values);
-                }
+                GoTo(0);
+                GoTo(3);
             }
             else
             {
-                if (child[1] != null)
-                {
-                    var values = child[1].FindXCol(X);
-                    if (values != null) points.AddRange(values);
-                }
+                GoTo(1);
+                GoTo(2);
+            }
 
-                if (child[2] != null)
+            void GoTo(int Quad)
+            {
+                if (child[Quad] != null)
                 {
-                    var values = child[2].FindXCol(X);
+                    var values = child[Quad].FindXCol(X);
                     if (values != null) points.AddRange(values);
                 }
             }
@@ -140,10 +125,8 @@ namespace TestQuadTree
 
             if (fill == true)
             {
-                var Ytemp = Dimensions.Center.Y + Dimensions.HalfLength - Dimensions.Lead / 2;
-                var u = Math.Floor((X - Dimensions.Center.X) / Dimensions.Lead);
-                var Xtemp = Dimensions.Center.X + u + Dimensions.Lead / 2;
-
+                var Ytemp = Dimensions.YCellMax();
+                var Xtemp = Dimensions.CenterOnCell(X);
                 return new Point(Xtemp,Ytemp);
             }
 
@@ -182,10 +165,8 @@ namespace TestQuadTree
 
             if (fill == true)
             {
-                var Ytemp = Dimensions.Center.Y - Dimensions.HalfLength + Dimensions.Lead / 2;
-                var u = Math.Floor((X - Dimensions.Center.X) / Dimensions.Lead);
-                var Xtemp = Dimensions.Center.X + u + Dimensions.Lead / 2;
-
+                var Ytemp = Dimensions.YCellMin();
+                var Xtemp = Dimensions.CenterOnCell(X);
                 return new Point(Xtemp, Ytemp);
             }
 
