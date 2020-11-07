@@ -11,6 +11,17 @@ namespace TestQuadTree
         public uint Units { get; }
         public double HalfLength { get; }
 
+        public double CenterOnCell(double X)
+        {
+            var u = Math.Floor((X - Center.X) / Lead);
+            return Center.X + u + Lead / 2;
+        }
+
+        public double YCellMax()
+        {
+            return Center.Y + HalfLength - Lead / 2;
+        }
+
         public bool InRange(Point point)
         {
             //Referencia a objeto no establecida como instancia de un objeto
